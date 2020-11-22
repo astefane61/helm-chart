@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "visitors-counter.fullname" . }}
+  labels:
+    {{- include "visitors-counter.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "visitors-counter.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "visitors-counter.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "visitors-counter.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - env:
+          - name: counter_config
+            value: '{"door_location": [0, 0.90, 1, 0.90], "line_thresh": 15}'
+          - name: detector_config
+            value: '{"dict_key": "detections", "model_params": {"model_type": "openvino",
+              "detection_xml": "/code/src/models/openvino/person-detection_high-angle/FP16/10/human_front_v10.0.xml",
+              "det_thresh": 0.3, "device": "CPU", "cpu_ext": ""}}'
+          - name: event_endpoint
+            value: http://pre.bonuvision.mts.ru/api/event/events
+          - name: pipeline_config
+            value: '{"draw": "False"}'
+          - name: tracker_config
+            value: '{"max_age": 15, "min_hits": 0, "iou_threshold": 0.3, "tracks_per_second":
+              25}'
+          - name: video_stream_url
+            value: rtsp://address:port/endpoint
+          image: docker-registry.bonuvision.mts.ru/detector/visitors_counter:latest
+          imagePullPolicy: ""
+          name: visitors-counter
+          resources: {}
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
