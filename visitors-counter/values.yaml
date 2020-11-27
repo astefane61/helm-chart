@@ -10,7 +10,15 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-imagePullSecrets: []
+imageCredentials:
+  registry: docker-registry.bonuvision.mts.ru
+  username: detector_user
+  password: q2X4mi960J
+
+imagePullSecrets:
+- name: myregistrykey
+
+
 nameOverride: ""
 fullnameOverride: ""
 
@@ -52,6 +60,9 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+hostNetwork: true
+
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

@@ -28,31 +28,24 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - env:
-          - name: counter_config
-            value: '{"door_location": [0, 0.90, 1, 0.90], "line_thresh": 15}'
-          - name: detector_config
-            value: '{"dict_key": "detections", "model_params": {"model_type": "openvino",
-              "detection_xml": "/code/src/models/openvino/person-detection_high-angle/FP16/10/human_front_v10.0.xml",
-              "det_thresh": 0.3, "device": "CPU", "cpu_ext": ""}}'
-          - name: event_endpoint
-            value: http://pre.bonuvision.mts.ru/api/event/events
-          - name: pipeline_config
-            value: '{"draw": "False"}'
-          - name: tracker_config
-            value: '{"max_age": 15, "min_hits": 0, "iou_threshold": 0.3, "tracks_per_second":
-              25}'
-          - name: video_stream_url
-            value: rtsp://address:port/endpoint
-          image: docker-registry.bonuvision.mts.ru/detector/visitors_counter:latest
-          imagePullPolicy: ""
-          name: visitors-counter
-          resources: {}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: detector_config
+              value: '{"dict_key":"detections","model_params":{"model_type": "openvino","detection_xml":"/code/src/models/openvino/person-detection_high-angle/FP16/10/human_front_v10.0.xml","det_thresh":0.3,"device":"CPU","cpu_ext":""}}'
+            - name: counter_config
+              value: '{"door_location": [0, 0.90, 1, 0.90], "line_thresh": 15}'
+            - name: tracker_config
+              value: '{"max_age": 15, "min_hits": 0, "iou_threshold": 0.3, "tracks_per_second":25}'
+            - name: pipeline_config
+              value: '{"draw": "False"}'
+            - name: video_stream_url
+              value: 'rtsp://10.200.2.97:8554/bars'
+            - name: event_endpoint
+              value: 'http://pre.bonuvision.mts.ru/api/event/events'
           ports:
             - name: http
               containerPort: 80
