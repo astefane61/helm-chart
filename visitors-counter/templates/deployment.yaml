@@ -43,9 +43,9 @@ spec:
             - name: pipeline_config
               value: '{"draw": "False"}'
             - name: video_stream_url
-              value: 'rtsp://10.200.2.97:8554/bars'
+              value: {{ .Values.myenvironment.video_stream }}
             - name: event_endpoint
-              value: 'http://pre.bonuvision.mts.ru/api/event/events'
+              value: {{ .Values.myenvironment.event_endpt }}
           ports:
             - name: http
               containerPort: 80
