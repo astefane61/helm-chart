@@ -2,8 +2,19 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+<<<<<<< HEAD
 video_stream: "rtsp://10.200.2.17:8554/bars"
 event_endpt: "http://pre.bonuvision.mts.ru/api/event/events"
+=======
+<<<<<<< HEAD
+video_stream: "rtsp://163.172.146.119:554/people1"
+event_endpt: "http://pre.bonuvision.mts.ru/api/event/events"
+=======
+myenvironment:
+  video_stream: "rtsp://163.172.146.119:554/people1"
+  event_endpt: "http://pre.bonuvision.mts.ru/api/event/events"
+>>>>>>> 9abe30d86538e826218b6363c7550a36ac5bd932
+>>>>>>> afe28ac9dd00a80837dc869621d3cb964c95d87e
 
 replicaCount: 1
 
