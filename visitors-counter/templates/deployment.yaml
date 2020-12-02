@@ -43,9 +43,15 @@ spec:
             - name: pipeline_config
               value: '{"draw": "False"}'
             - name: video_stream_url
+<<<<<<< HEAD
               value: {{ .Values.video_stream }}
             - name: event_endpoint
               value: {{ .Values.event_endpt }}
+=======
+              value: {{ .Values.myenvironment.video_stream }}
+            - name: event_endpoint
+              value: {{ .Values.myenvironment.event_endpt }}
+>>>>>>> 9abe30d86538e826218b6363c7550a36ac5bd932
           ports:
             - name: http
               containerPort: 80
